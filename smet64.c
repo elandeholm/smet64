@@ -6,9 +6,9 @@
 #define KEYBUFS 256
 #define SMETMAGIC 0xb17217f7d1cf79ab /* ln(2) * 2^64 */
 
-static void encode( uint64_t data[2],
-										const uint64_t RK[NROUNDS+1],
-										const uint64_t C[NROUNDS+1])
+static void encode(uint64_t data[2],
+                   const uint64_t RK[NROUNDS+1],
+                   const uint64_t C[NROUNDS+1])
 {
 	uint64_t X, dL, dR;
 	int i;
@@ -30,9 +30,9 @@ static void encode( uint64_t data[2],
 	data[1] = dR;
 }
 
-static void round_keys( const uint64_t key_buf[KEYBUFS],
-												uint64_t RK[NROUNDS+1],
-												uint64_t C[NROUNDS+1], int mode)
+static void round_keys(const uint64_t key_buf[KEYBUFS],
+                       uint64_t RK[NROUNDS+1],
+                       uint64_t C[NROUNDS+1], int mode)
 {
 	uint64_t data[2], Ca, Cb;
 	int i, rkp;
@@ -74,8 +74,8 @@ static void round_keys( const uint64_t key_buf[KEYBUFS],
 }
 
 static void passphrase(const char *p,
-												uint64_t RK[NROUNDS+1], 
-												uint64_t C[NROUNDS+1], int mode)
+                       uint64_t RK[NROUNDS+1],
+                       uint64_t C[NROUNDS+1], int mode)
 {
 	uint64_t kb, key_buf[KEYBUFS];
 	int pp, pl, i, j;
