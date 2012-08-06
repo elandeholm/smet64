@@ -2,7 +2,8 @@
 #include <string.h>
 #include <stdio.h>
 
-#define NROUNDS 20
+#include "smet64.h"
+
 #define KEYBUFS 256
 #define SMETMAGIC 0xb17217f7d1cf79ab /* ln(2) * 2^64 */
 
@@ -96,13 +97,6 @@ static void passphrase(const char *p,
 	
 	round_keys(key_buf, RK, C, mode);
 }
-
-
-struct smet64
-{
-	uint64_t RK[NROUNDS+1];
-	uint64_t C[NROUNDS+1];
-};
 
 void smet64_encode_init(const char *p, struct smet64 *s64)
 {
