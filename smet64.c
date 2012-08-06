@@ -8,8 +8,8 @@
 #define SMETMAGIC 0xb17217f7d1cf79ab /* ln(2) * 2^64 */
 
 static void encode(uint64_t data[2],
-                   const uint64_t RK[NROUNDS+1],
-                   const uint64_t C[NROUNDS+1])
+                   const uint64_t RK[SMET64_NROUNDS+1],
+                   const uint64_t C[SMET64_NROUNDS+1])
 {
 	uint64_t X, dL, dR;
 	int i;
@@ -17,7 +17,7 @@ static void encode(uint64_t data[2],
 	dL = data[0];
 	dR = data[1];
 	
-	for(i = 0; i < NROUNDS; i += 2)
+	for(i = 0; i < SMET64_NROUNDS; i += 2)
 	{
 		X = RK[i] - dR;
 		dL ^= ((X << 11) ^ C[i]) + (X >> 2);
@@ -32,8 +32,8 @@ static void encode(uint64_t data[2],
 }
 
 static void round_keys(const uint64_t key_buf[KEYBUFS],
-                       uint64_t RK[NROUNDS+1],
-                       uint64_t C[NROUNDS+1], int mode)
+                       uint64_t RK[SMET64_NROUNDS+1],
+                       uint64_t C[SMET64_NROUNDS+1], int mode)
 {
 	uint64_t data[2], Ca, Cb;
 	int i, rkp;
@@ -41,7 +41,7 @@ static void round_keys(const uint64_t key_buf[KEYBUFS],
 	Ca = 0;
 	Cb = SMETMAGIC;
 
-	for(i = 0; i < NROUNDS+1; ++i)
+	for(i = 0; i < SMET64_NROUNDS+1; ++i)
 	{
 		Ca += Cb;
 		RK[i] = 0;
@@ -54,29 +54,29 @@ static void round_keys(const uint64_t key_buf[KEYBUFS],
 		data[1] = key_buf[i+1];
 		encode(data, RK, C);
 		RK[rkp] += data[0];
-		rkp = (rkp + 1) % (NROUNDS + 1);
+		rkp = (rkp + 1) % (SMET64_NROUNDS + 1);
 		RK[rkp] += data[1];
-		rkp = (rkp + 1) % (NROUNDS + 1);
+		rkp = (rkp + 1) % (SMET64_NROUNDS + 1);
 	}
 	
 	if(mode != 0)
 	{
 		uint64_t tmp;
-		for(i = 0; i < NROUNDS / 2; ++i)
+		for(i = 0; i < SMET64_NROUNDS / 2; ++i)
 		{
-			tmp = RK[NROUNDS - i];
-			RK[NROUNDS - i] = RK[i];
+			tmp = RK[SMET64_NROUNDS - i];
+			RK[SMET64_NROUNDS - i] = RK[i];
 			RK[i] = tmp;
-			tmp = C[NROUNDS - i];
-			C[NROUNDS - i] = C[i];
+			tmp = C[SMET64_NROUNDS - i];
+			C[SMET64_NROUNDS - i] = C[i];
 			C[i] = tmp;
 		}
 	}
 }
 
 static void passphrase(const char *p,
-                       uint64_t RK[NROUNDS+1],
-                       uint64_t C[NROUNDS+1], int mode)
+                       uint64_t RK[SMET64_NROUNDS+1],
+                       uint64_t C[SMET64_NROUNDS+1], int mode)
 {
 	uint64_t kb, key_buf[KEYBUFS];
 	int pp, pl, i, j;
@@ -177,7 +177,7 @@ void print_s64(const struct smet64 *s64)
 	int i;
 	
 	puts("smet64 RK[], C[]");
-	for(i = 0; i < NROUNDS+1; ++i)
+	for(i = 0; i < SMET64_NROUNDS+1; ++i)
 	{
 		printf("  %02d: %016"PRIx64" %016"PRIx64"\n", i, s64->RK[i], s64->C[i]);
 	}
